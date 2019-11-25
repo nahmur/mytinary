@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const City = require('./backend/City');
+const Itinerary= require('./backend/itinerary')
 
 router.route('/api/cities')
     .get(async function(req, res){
@@ -46,5 +47,16 @@ router.route('/api/cities/:id')
             res.send(e);
         }
     });
+
+    router.route('/api/itinerary')
+    .get(async function(req, res){
+        try{
+            const itinerary = await Itinerary.find();
+            res.send(itinerary);
+        } catch(e){
+            res.send(e);
+        }
+    })
+
 
 module.exports = router;

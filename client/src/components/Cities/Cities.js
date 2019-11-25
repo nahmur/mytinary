@@ -2,9 +2,11 @@ import React, { Component } from "react";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
 import { Link } from "react-router-dom";
+import {connect} from "react-redux"
+import {getAllTheCities} from "../../store/actions/cityActions"
 import "./cities.css";
 
-export default class Cities extends Component {
+class Cities extends Component {
   state = {
     listCities: [],
     filterCities: [],
@@ -12,15 +14,12 @@ export default class Cities extends Component {
     loading: true
   };
 
-  componentDidMount() {
-    const url = "http://localhost:5000/api/cities/";
-    fetch(url)
-      .then(response => response.json())
-      .then(data =>
-        this.setState({ listCities: data, filterCities: data, loading: false })
-      )
-      .catch(err => console.log(err));
-  }
+async componentDidMount (){
+await this.props.getAllCities()
+this.setState({listCities: this.props.ciudades.cityReducer.citiesArray, filterCities: this.props.ciudades.cityReducer.citiesArray, loading:false})
+console.log(this.state.listCities)
+}
+
 
   filterList = e => {
     var value = e.target.value.toLowerCase();
@@ -34,6 +33,7 @@ export default class Cities extends Component {
 
   render() {
     const { loading, filterCities } = this.state;
+    console.log(this.props.ciudades.cityReducer)
     return (
       <>
         <Header />
@@ -53,8 +53,8 @@ export default class Cities extends Component {
               ) : (
                 <div className="containerCities">
                   {filterCities.map(city => (
-                    <Link to={`/cities/${city._id}`} className="containerCity" key={city._id} city={city._id}>
-                      <img src={city.url} alt={city.name} />
+                    <Link to={`/cities/${city.name}`} className="containerCity" key={city._id} city={city._id}>
+                      <img src={city.imagen} alt={city.name} />
                       <span>{city.name}</span>
                     </Link>
                   ))}
@@ -68,3 +68,20 @@ export default class Cities extends Component {
     );
   }
 }
+
+
+const mapStateToProps=(state,ownProps)=>{
+  return{ciudades:state}
+}
+
+//Se ejecuta y guarda lo que esta en el store en getAllCities
+const mapDispatchToProps=dispatch=>{
+  return{
+    getAllCities:()=>dispatch(getAllTheCities())
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps)(Cities
+)
